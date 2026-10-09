@@ -12,7 +12,7 @@ Chaque étape est décrite de la même façon : **pourquoi** on la fait (ce que 
 | – | Noms des groupes (`data/ref/atc.csv`) | Fait, libellés à vérifier sur l'index ATC/DDD de l'OMS |
 | 1 | Dépôt propre | Presque : reste `package-lock.json` à supprimer |
 | 2 | Statistiques descriptives (`statistiques.ipynb`) | 5 cellules faites ; reste les conclusions en texte |
-| 3 | Donnée publique externe | À faire |
+| 3 | Donnée publique externe (`externe.ipynb`) | Donnée téléchargée, code prêt ; notebook en cours |
 | 4 | Test de prévision | À faire |
 | 5 | Classeur Excel | À faire |
 | 6 | Mémo PDF | À faire |
@@ -61,6 +61,66 @@ Chaque étape est décrite de la même façon : **pourquoi** on la fait (ce que 
 | Heure | Part de chaque heure dans les ventes de la journée | Repérer les pics et les heures creuses, discuter les horaires | Propriétaire |
 | Saisonnalité | Indice par mois (100 = mois moyen du groupe) | Savoir quelles périodes de l'année anticiper | Pharmacien acheteur |
 | Tendance annuelle | Total par année complète (2015-2018) et évolution en % | Savoir quels groupes montent ou baissent | Propriétaire, manager |
+
+**Le code des cinq cellules.**
+
+Cellule 1 – Résumé par groupe (crée `d` et `groupes`, à exécuter en premier) :
+
+```python
+import pandas as pd
+
+d = pd.read_csv("data/clean/ventes_journalier.csv", encoding="utf-8-sig", parse_dates=["date"])
+d = d[d["journee_complete"]]                         # on ecarte les 2 journees tronquees
+groupes = [c for c in d.columns if c.endswith(")")]  # les 8 colonnes "Nom (code)"
+
+resume = pd.DataFrame({
+    "total": d[groupes].sum(),
+    "moyenne_jour": d[groupes].mean(),
+    "mediane_jour": d[groupes].median(),
+    "ecart_type": d[groupes].std(),
+    "jours_a_zero_%": 100 * (d[groupes] == 0).mean(),
+})
+resume["coef_variation"] = resume["ecart_type"] / resume["moyenne_jour"]
+display(resume.round(2))
+```
+
+Cellule 2 – Jour de semaine :
+
+```python
+ordre = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+par_jour = d.groupby("jour_semaine")[groupes].mean().loc[ordre]
+indice_jour = 100 * par_jour / d[groupes].mean()     # 100 = jour moyen du groupe
+display(indice_jour.round(0).T)
+```
+
+Cellule 3 – Heure :
+
+```python
+h = pd.read_csv("data/clean/ventes_horaire.csv", encoding="utf-8-sig", parse_dates=["date"])
+h = h[h["heure_ouverture"] & h["date"].dt.normalize().isin(d["date"])]   # heures ouvertes, journees completes
+par_heure = h.groupby("heure")[groupes].mean()
+part_heure = 100 * par_heure / par_heure.sum()       # part de chaque heure dans la journee, en %
+display(part_heure.round(1).T)
+```
+
+Cellule 4 – Saisonnalité :
+
+```python
+m = pd.read_csv("data/clean/ventes_mensuel.csv", encoding="utf-8-sig", parse_dates=["date_fin_mois"])
+m = m[m["mois_complet"]]
+par_mois = m.groupby(m["date_fin_mois"].dt.month)[groupes].mean()
+indice_mois = 100 * par_mois / par_mois.mean()       # 100 = mois moyen du groupe
+indice_mois.index.name = "mois"
+display(indice_mois.round(0).T)
+```
+
+Cellule 5 – Tendance annuelle :
+
+```python
+annuel = d[d["annee"].between(2015, 2018)].groupby("annee")[groupes].sum()   # annees completes
+evolution = 100 * (annuel.loc[2018] / annuel.loc[2015] - 1)
+display(annuel.round(0).T.assign(evolution_2015_2018_pct=evolution.round(1)))
+```
 
 **Ce qu'il reste à faire.**
 
@@ -118,15 +178,98 @@ Une seule source bien exploitée suffit. Commencer par Sentinelles.
 8. **Tracer un graphique** : ventes de paracétamol et cas de grippe sur le même axe de temps.
 9. **Écrire la conclusion et la recommandation.**
 
-**Ce qu'on obtient.** Un tableau de 8 lignes (un chiffre de corrélation par groupe), un graphique, et une phrase du type : « les ventes de paracétamol suivent l'épidémie de grippe : elles dépendent de l'environnement, pas de la pharmacie ».
+**Déjà fait.** Les points 1 à 3 : le fichier est dans `data/externe/sentinelles_syndromes_grippaux.csv`, téléchargé le 09/10/2026 depuis `https://www.sentiweb.fr/datasets/all/inc-3-PAY.csv`. Il couvre 2014-2019. `matplotlib` est ajouté à `requirements.txt` : après un `git pull`, relancer `venv\Scripts\python -m pip install -r requirements.txt`.
 
-**La recommandation qui en découle** (si le lien est confirmé) : suivre le bulletin hebdomadaire Sentinelles et augmenter les commandes de paracétamol dès que l'épidémie démarre, au lieu d'attendre de voir les ventes monter.
+**Le code des cinq cellules** (`externe.ipynb`, à la racine).
+
+Cellule 1 – Charger la donnée grippe (crée `s`, à exécuter en premier) :
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Source : reseau Sentinelles (INSERM, Sorbonne Universite), syndromes grippaux, France entiere
+# https://www.sentiweb.fr/datasets/all/inc-3-PAY.csv  (telecharge le 09/10/2026)
+s = pd.read_csv("data/externe/sentinelles_syndromes_grippaux.csv", comment="#", encoding="latin-1")
+s["date_fin_semaine"] = pd.to_datetime(s["week"].astype(str) + "7", format="%G%V%u")   # semaine -> dimanche de fin
+s["grippe"] = pd.to_numeric(s["inc100"], errors="coerce")   # cas pour 100 000 habitants
+s = s[["date_fin_semaine", "grippe"]]
+display(s.head())
+```
+
+Cellule 2 – Joindre aux ventes (crée `x`, utilisé par toutes les suivantes) :
+
+```python
+w = pd.read_csv("data/clean/ventes_hebdo.csv", encoding="utf-8-sig", parse_dates=["date_fin_semaine"])
+w = w[w["semaine_complete"]]
+groupes = [c for c in w.columns if c.endswith(")")]
+x = w.merge(s, on="date_fin_semaine", how="left")
+print(len(x), "semaines ;", x["grippe"].isna().sum(), "sans donnee grippe")
+```
+
+Doit afficher `300 semaines ; 0 sans donnee grippe`.
+
+Cellule 3 – Corrélation par groupe :
+
+```python
+corr = x[groupes].corrwith(x["grippe"])
+tableau = pd.DataFrame({"correlation": corr.round(2),
+                        "part_expliquee_%": (100 * corr**2).round(0)})
+display(tableau.sort_values("correlation", ascending=False))
+```
+
+Cellule 4 – Semaines de forte grippe contre les autres :
+
+```python
+x["forte_grippe"] = x["grippe"] >= 150      # seuil choisi par nous : 51 semaines sur 300
+comp = x.groupby("forte_grippe")[groupes].mean().T
+comp.columns = ["semaine_normale", "semaine_forte_grippe"]
+comp["ecart_%"] = (100 * (comp["semaine_forte_grippe"] / comp["semaine_normale"] - 1)).round(0)
+display(comp.round(1))
+```
+
+Cellule 5 – Graphique :
+
+```python
+para = [g for g in groupes if "N02BE" in g][0]
+fig, (haut, bas) = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
+haut.plot(x["date_fin_semaine"], x[para])
+haut.set_ylabel("Ventes par semaine")
+haut.set_title(f"{para} : ventes de la pharmacie")
+bas.plot(x["date_fin_semaine"], x["grippe"], color="tab:red")
+bas.set_ylabel("Cas pour 100 000 habitants")
+bas.set_title("Syndromes grippaux en France (réseau Sentinelles)")
+plt.tight_layout()
+plt.show()
+```
+
+**Ce qu'on obtient.**
+
+| Groupe | Corrélation | Semaine normale | Semaine de forte grippe | Écart |
+|---|---|---|---|---|
+| Paracétamol (N02BE) | 0,42 | 197,6 | 287,8 | +46 % |
+| Antiasthmatiques (R03) | 0,29 | 36,3 | 52,3 | +44 % |
+| AINS propioniques (M01AE) | 0,39 | 26,5 | 33,6 | +27 % |
+| Aspirine et dérivés (N02BA) | 0,24 | 26,5 | 30,9 | +17 % |
+| Anxiolytiques (N05B) | 0,09 | 61,1 | 65,4 | +7 % |
+| Somnifères (N05C) | 0,03 | 4,1 | 4,3 | +3 % |
+| AINS acétiques (M01AB) | 0,01 | 35,6 | 36,0 | +1 % |
+| Antihistaminiques (R06) | -0,32 | 22,1 | 12,7 | -43 % |
+
+**Les conclusions à écrire.**
+
+- Quatre groupes dépendent de l'environnement : paracétamol, antiasthmatiques, anti-inflammatoires propioniques et aspirine se vendent nettement plus les semaines de forte grippe (+17 à +46 %).
+- Trois groupes n'en dépendent pas : anxiolytiques, somnifères et anti-inflammatoires acétiques ne bougent presque pas.
+- Les antihistaminiques baissent pendant la grippe parce que la grippe est en hiver et les allergies au printemps : ce n'est pas un effet de la grippe.
+
+**La recommandation qui en découle** : suivre le bulletin hebdomadaire Sentinelles et relever les commandes de paracétamol et d'antiasthmatiques dès que l'épidémie démarre, au lieu d'attendre de voir les ventes monter.
 
 **Réserves à dire à l'oral.**
 
+- Le lien est réel mais partiel : la grippe n'explique que 17 % des variations du paracétamol. Les ventes montent dès l'automne, avant le pic de grippe de janvier-février : d'autres causes hivernales jouent.
 - On ne sait pas où est la pharmacie : la donnée est nationale, pas locale. Avec la région du client, l'analyse serait plus précise (argument pour une mission de suivi).
 - Deux courbes qui bougent ensemble ne prouvent pas que l'une cause l'autre : le froid peut faire monter les deux.
-- Le format exact du fichier Sentinelles n'a pas été vérifié en rédigeant ce plan : c'est le point 1.
+- Le seuil de 150 cas pour 100 000 est notre choix pour séparer les semaines, pas un seuil officiel.
 
 **C'est fini quand** le notebook tourne depuis une copie fraîche, que le fichier externe est dans le dépôt avec sa source, et que la recommandation est écrite.
 
