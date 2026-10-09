@@ -37,14 +37,36 @@ Document de travail du groupe. **À ne pas livrer** : le sujet demande que le d�
 - Ajouter un `requirements.txt` (pandas, numpy, etc.) : sans lui, le code ne tourne pas depuis une copie fraîche.
 - Chacun commite sous son propre compte : l'historique est noté et doit montrer le partage du travail.
 
-### 2. Statistiques descriptives (`statistiques.py`)
+### 2. Statistiques descriptives (`statistiques.ipynb`)
 
-À choisir pour qu'elles servent une décision :
+Cinq cellules, à exécuter dans l'ordre. Chacune répond à une question d'un interlocuteur.
 
-- par groupe : total, moyenne et médiane journalières, coefficient de variation, part des jours à zéro, part du volume ;
-- profil par jour de semaine et par heure (heures d'ouverture seulement) ;
-- saisonnalité : indice mensuel par groupe ;
-- tendance annuelle sur les années complètes (2015-2018).
+| Cellule | Ce qu'elle calcule | À quoi elle sert | Pour qui |
+|---|---|---|---|
+| 1. Résumé par groupe | Total, moyenne et médiane par jour, écart-type, part des jours à zéro, coefficient de variation | Savoir ce qui se vend et si c'est régulier. Un coefficient de variation élevé ou beaucoup de jours à zéro = groupe difficile à anticiper | Pharmacien acheteur |
+| 2. Jour de semaine | Indice par jour (100 = jour moyen du groupe) | Savoir quels jours renforcer le stock et l'équipe, et repérer les groupes semaine / week-end | Pharmacien acheteur, propriétaire |
+| 3. Heure | Part de chaque heure dans les ventes de la journée, heures d'ouverture seulement | Repérer les pics de la journée et les heures creuses, pour discuter les horaires d'ouverture | Propriétaire |
+| 4. Saisonnalité | Indice par mois (100 = mois moyen du groupe) | Savoir quelles périodes de l'année anticiper pour chaque groupe | Pharmacien acheteur |
+| 5. Tendance annuelle | Total par année complète (2015-2018) et évolution en % | Savoir quels groupes montent ou baissent sur la durée | Propriétaire, manager |
+
+Règles communes :
+
+- La cellule 1 crée `d` et `groupes`, utilisés par toutes les autres : toujours l'exécuter en premier.
+- Une statistique par cellule : Jupyter n'affiche que le dernier tableau d'une cellule.
+- Les indices (base 100) servent à comparer des groupes de tailles très différentes : le paracétamol se vend six fois plus que les autres.
+- On ne calcule pas de « part du volume » entre groupes : l'unité des quantités n'est pas documentée, additionner des groupes entre eux n'a pas de sens garanti.
+- Journées, mois et années incomplets sont écartés des calculs.
+
+Premiers résultats à retenir :
+
+- Jour : anxiolytiques et somnifères chutent le dimanche (65 et 53) ; paracétamol et anti-inflammatoires montent le week-end (111 à 119).
+- Heure : deux pics, vers 10 h-12 h et 18 h-20 h ; 7 h et 22 h pèsent moins de 1 % chacune.
+- Saison : antihistaminiques au printemps (179 en mai), antiasthmatiques et paracétamol en hiver, creux en été.
+- Tendance : antiasthmatiques et somnifères environ +52 %, aspirine -30 %.
+
+À creuser : l'année 2017 est nettement plus basse que ses voisines pour plusieurs groupes. Regarder mois par mois s'il y a un trou (fermeture, défaut d'export) avant de conclure sur la tendance.
+
+Pour finir l'étape : « Restart » puis « Run All » sans erreur, puis commit. L'écriture des tableaux dans le classeur relève de l'étape 5.
 
 ### 3. Donnée externe (`externe.py`)
 
