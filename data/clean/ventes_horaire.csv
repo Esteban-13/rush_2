@@ -1,4 +1,4 @@
-date,M01AB,M01AE,N02BA,N02BE,N05B,N05C,R03,R06,heure_ouverture,heure,jour_semaine,annee,mois_num
+﻿date,AINS acétiques (M01AB),AINS propioniques (M01AE),Aspirine et dérivés (N02BA),Paracétamol (N02BE),Anxiolytiques (N05B),Somnifères (N05C),Antiasthmatiques (R03),Antihistaminiques (R06),heure_ouverture,heure,jour_semaine,annee,mois_num
 2014-01-02 08:00,0.0,0.67,0.4,2.0,0.0,0,0.0,1.0,True,8,jeudi,2014,1
 2014-01-02 09:00,0.0,0.0,1.0,0.0,2.0,0,0.0,0.0,True,9,jeudi,2014,1
 2014-01-02 10:00,0.0,0.0,0.0,3.0,2.0,0,0.0,0.0,True,10,jeudi,2014,1

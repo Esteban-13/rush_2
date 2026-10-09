@@ -11,3 +11,4 @@ mois,"Octobre 2019 incomplet (8 jours), janvier 2014 sans le 1er janvier",2,flag
 horaire,Aucune vente de 23h a 6h (ouverture reelle 7h-22h),16840,lignes conservees mais flag heure_ouverture ; a exclure des moyennes horaires
 jour,"Valeurs extremes (|z robuste| > 8) : 9 cellules, ex. [datetime.date(2016, 6, 19), datetime.date(2016, 10, 11), datetime.date(2016, 12, 30)]...",9,"flag *_aberrant ; conservees (non verifiables, coherentes avec hebdo)"
 jour,"Quantites non entieres (ex. 0,33 / 3,67 : unite non documentee)",5548,"conservees telles quelles, a documenter dans l'etat des donnees"
+tous,"Groupes identifies par leur code ATC, sans nom",8,libelles ajoutes depuis data/ref/atc.csv (classification ATC de l'OMS) ; codes conserves comme cle

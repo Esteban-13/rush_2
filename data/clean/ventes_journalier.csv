@@ -1,4 +1,4 @@
-date,M01AB,M01AE,N02BA,N02BE,N05B,N05C,R03,R06,journee_complete,M01AB_aberrant,M01AE_aberrant,N02BA_aberrant,N02BE_aberrant,N05B_aberrant,N05C_aberrant,R03_aberrant,R06_aberrant,jour_semaine,annee,mois_num
+﻿date,AINS acétiques (M01AB),AINS propioniques (M01AE),Aspirine et dérivés (N02BA),Paracétamol (N02BE),Anxiolytiques (N05B),Somnifères (N05C),Antiasthmatiques (R03),Antihistaminiques (R06),journee_complete,AINS acétiques (M01AB)_aberrant,AINS propioniques (M01AE)_aberrant,Aspirine et dérivés (N02BA)_aberrant,Paracétamol (N02BE)_aberrant,Anxiolytiques (N05B)_aberrant,Somnifères (N05C)_aberrant,Antiasthmatiques (R03)_aberrant,Antihistaminiques (R06)_aberrant,jour_semaine,annee,mois_num
 2014-01-02,0.0,3.67,3.4,32.4,7.0,0,0.0,2.0,False,False,False,False,False,False,False,False,False,jeudi,2014,1
 2014-01-03,8.0,4.0,4.4,50.6,16.0,0,20.0,4.0,True,False,False,False,False,False,False,False,False,vendredi,2014,1
 2014-01-04,2.0,1.0,6.5,61.85,10.0,0,9.0,1.0,True,False,False,False,False,False,False,False,False,samedi,2014,1

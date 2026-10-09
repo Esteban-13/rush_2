@@ -20,13 +20,25 @@ RAW = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("data/raw")
 OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("data/clean")
 OUT.mkdir(parents=True, exist_ok=True)
 
-ATC = ["M01AB", "M01AE", "N02BA", "N02BE", "N05B", "N05C", "R03", "R06"]
+# Referentiel des groupes de medicaments (classification ATC de l'OMS) : seule source
+# des noms. Les codes restent la cle technique, les libelles servent a l'affichage.
+REF = pd.read_csv(Path("data/ref/atc.csv"))
+ATC = REF["code_atc"].tolist()
+LIB = {c: f"{lib} ({c})" for c, lib in zip(REF["code_atc"], REF["libelle"])}
 JOURS_FR = {0: "lundi", 1: "mardi", 2: "mercredi", 3: "jeudi",
             4: "vendredi", 5: "samedi", 6: "dimanche"}
 TOL = 0.05          # tolerance (en unites) pour dire que deux totaux concordent
 SEUIL_Z = 8         # seuil d'aberration (z-score robuste, MAD)
 
 journal = []        # "etat des donnees" : une ligne par constat / action
+
+
+def nomme(df):
+    """Colonnes des fichiers ecrits : 'N05B' -> 'Anxiolytiques (N05B)', suffixes conserves."""
+    def col(c):
+        code, sep, reste = c.partition("_")
+        return LIB[code] + sep + reste if code in LIB else c
+    return df.rename(columns=col)
 
 
 def log(fichier, constat, nb, action):
@@ -57,6 +69,7 @@ log("tous", "Formats de date differents (m/j/a ; ISO pour le mensuel)",
 
 # %% 2. Controles de base : tri, doublons, manquants, valeurs negatives
 for nom, df in [("horaire", h), ("jour", d), ("semaine", w), ("mois", m)]:
+    assert set(ATC) <= set(df.columns), f"{nom} : codes ATC absents du referentiel ou de l'export"
     assert df["date"].is_monotonic_increasing, f"{nom} non trie"
     assert not df["date"].duplicated().any(), f"{nom} doublons de date"
     assert not df[ATC].isna().any().any(), f"{nom} valeurs manquantes"
@@ -108,7 +121,8 @@ ecarts = pd.DataFrame({
        for c in ATC},
 })
 ecarts = ecarts[mois_ko.values]
-ecarts.to_csv(OUT / "ecarts_mensuel_vs_journalier.csv", index=False)
+nomme(ecarts).to_csv(OUT / "ecarts_mensuel_vs_journalier.csv", index=False,
+                     encoding="utf-8-sig")
 
 # %% 5. Periodes incompletes (debut et fin d'export)
 jour_ok = ~d["date"].isin(pd.to_datetime(jours_tronques))
@@ -182,8 +196,21 @@ m_out = m_clean.rename(columns={"date": "date_fin_mois"})
 
 for nom, df in [("ventes_horaire", h_out), ("ventes_journalier", d_out),
                 ("ventes_hebdo", w_out), ("ventes_mensuel", m_out)]:
-    df.to_csv(OUT / f"{nom}.csv", index=False, date_format="%Y-%m-%d %H:%M"
-              if nom == "ventes_horaire" else "%Y-%m-%d")
+    # utf-8-sig : sans cela Excel affiche mal les accents des libelles
+    nomme(df).to_csv(OUT / f"{nom}.csv", index=False, encoding="utf-8-sig",
+                     date_format="%Y-%m-%d %H:%M" if nom == "ventes_horaire" else "%Y-%m-%d")
+
+# Format long avec le nom des groupes : une ligne par jour et par groupe.
+# C'est la table a brancher sur l'outil de selection Excel (segments sur groupe / date).
+d_long = d_out.melt(id_vars=["date", "jour_semaine", "annee", "mois_num", "journee_complete"],
+                    value_vars=ATC, var_name="code_atc", value_name="quantite")
+d_long["groupe"] = d_long["code_atc"].map(LIB)
+d_long = d_long.sort_values(["date", "code_atc"])
+d_long.to_csv(OUT / "ventes_journalier_long.csv", index=False, date_format="%Y-%m-%d",
+              encoding="utf-8-sig")
+log("tous", "Groupes identifies par leur code ATC, sans nom",
+    len(ATC), "libelles ajoutes depuis data/ref/atc.csv (classification ATC de l'OMS) ; "
+              "codes conserves comme cle")
 
 pd.DataFrame(journal).to_csv(OUT / "etat_des_donnees.csv", index=False)
 print(f"\nFichiers ecrits dans {OUT.resolve()}")

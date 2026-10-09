@@ -1,4 +1,4 @@
-date_fin_mois,M01AB,M01AE,N02BA,N02BE,N05B,N05C,R03,R06,mois_complet
+﻿date_fin_mois,AINS acétiques (M01AB),AINS propioniques (M01AE),Aspirine et dérivés (N02BA),Paracétamol (N02BE),Anxiolytiques (N05B),Somnifères (N05C),Antiasthmatiques (R03),Antihistaminiques (R06),mois_complet
 2014-01-31,132.02,99.75,154.6,915.03,360.0,30,115.0,52.2,False
 2014-02-28,133.32,126.05,177.0,1001.9,347.0,31,122.0,36.2,True
 2014-03-31,137.44,92.95,147.655,779.275,232.0,20,112.0,85.4,True
