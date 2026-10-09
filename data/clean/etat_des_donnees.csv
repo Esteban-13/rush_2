@@ -1,0 +1,13 @@
+fichier,constat,nb_lignes_concernees,action
+tous,Formats de date differents (m/j/a ; ISO pour le mensuel),4,dates converties en datetime avec format explicite
+tous,"Tri, doublons, valeurs manquantes, valeurs negatives : aucun probleme",0,aucune action
+jour,Colonne 'Hour' = somme des heures presentes (276 si journee complete),2,"colonne supprimee ; journees tronquees detectees : [datetime.date(2014, 1, 2), datetime.date(2019, 10, 8)]"
+horaire,Somme horaire == journalier (ecart max 0.000),0,concordent : horaire/jour = meme source
+semaine,"Somme journaliere == hebdo, semaine = lundi->dimanche, date = dimanche (ecart max 0.000)",302,concordent
+mois,Mensuel different de la somme des jours (le mensuel est ecarte des 3 autres),31,sur 70 mois ; mensuel RECONSTRUIT depuis le journalier
+jour,Derniere journee tronquee (export arrete a 19h) / premiere sans 7h,2,flag journee_complete = False
+semaine,Premiere (1/5/2014) et derniere (10/13/2019) semaines incompletes,2,flag semaine_complete = False
+mois,"Octobre 2019 incomplet (8 jours), janvier 2014 sans le 1er janvier",2,flag mois_complet ; dernier mois complet = 2019-09
+horaire,Aucune vente de 23h a 6h (ouverture reelle 7h-22h),16840,lignes conservees mais flag heure_ouverture ; a exclure des moyennes horaires
+jour,"Valeurs extremes (|z robuste| > 8) : 9 cellules, ex. [datetime.date(2016, 6, 19), datetime.date(2016, 10, 11), datetime.date(2016, 12, 30)]...",9,"flag *_aberrant ; conservees (non verifiables, coherentes avec hebdo)"
+jour,"Quantites non entieres (ex. 0,33 / 3,67 : unite non documentee)",5548,"conservees telles quelles, a documenter dans l'etat des donnees"
