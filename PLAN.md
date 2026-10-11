@@ -4,6 +4,39 @@ Document de travail du groupe. **À ne pas livrer** : le sujet demande que le d�
 
 Chaque étape est décrite de la même façon : **pourquoi** on la fait (ce que le sujet exige), **ce qu'il faut faire** (dans l'ordre), **ce qu'on obtient**, et **c'est fini quand**.
 
+## Point au dimanche 11 octobre (soir)
+
+Tout le code est fait et tourne depuis une copie neuve du dépôt. Il reste la rédaction et la présentation. Le tableau « Où on en est » juste en dessous est l'état de jeudi 9, gardé pour mémoire.
+
+| Étape | Livrable | État dimanche soir | Fait par |
+|---|---|---|---|
+| – | Nettoyage des 4 exports (`nettoyage.py`) | Fait | Esteban |
+| – | Noms des groupes (`data/ref/atc.csv`) | Fait ; libellés toujours à vérifier sur l'index ATC/DDD de l'OMS | Lilie |
+| 1 | Dépôt propre | **À faire lundi** (liste ci-dessous) | – |
+| 2 | Statistiques descriptives (`statistiques.ipynb`) | Fait, avec titres | Les trois |
+| 3 | Donnée publique externe (`externe.ipynb`) | Fait ; cellule en double supprimée dimanche | Lilie, Esteban |
+| 4 | Test de prévision (`prevision.ipynb`) | Fait : « oui pour 2 groupes sur 8 » (paracétamol, antihistaminiques) | Esteban |
+| 5 | Classeur Excel (`classeur.py`, `classeur_pharmacie.xlsx`) | Fait : 6 feuilles, outil sans macro | Esteban |
+| 6 | Mémo PDF | **Pas commencé** | À attribuer |
+| 7 | 3 decks de 5 slides | **Pas commencés** | À attribuer |
+| 8 | README et répétition | README écrit sauf « Qui a fait quoi » ; oraux pas répétés | Lilie |
+
+**À faire lundi, dans l'ordre.**
+
+1. Ménage du dépôt (étape 1). Fichiers à supprimer, aucun n'est utilisé par le code :
+   - `data/data_roaw/` : copie identique de `data/raw/` ;
+   - `data/données_externes/` : copie identique du fichier de `data/externe/` ;
+   - `~$classeur_pharmacie.xlsx` : fichier temporaire d'Excel ;
+   - `package-lock.json` : reste d'une commande `npm` ;
+   - `classeur.ipynb` ou `classeur.py` : ils font la même chose, n'en garder qu'un et adapter le README ;
+   - `data/clean/ventes_journalier_long.csv` : le classeur ne s'en sert pas ; retirer aussi le bloc qui le crée dans `nettoyage.py`.
+2. Se répartir le mémo (2 parties) et les 3 decks.
+3. Mémo partie 1 : reprendre les conclusions de `prevision.ipynb`.
+4. Mémo partie 2 : partage des données avec le laboratoire (voir étape 6).
+5. Les 3 decks (voir étape 7).
+6. Remplir « Qui a fait quoi » dans le README.
+7. Dernier test sur une copie neuve, suppression de ce `PLAN.md`, répétition des oraux.
+
 ## Où on en est
 
 | Étape | Livrable | État |
