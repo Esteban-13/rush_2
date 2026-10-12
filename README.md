@@ -16,7 +16,7 @@ On a utilisé Jupyter.
 - `statistiques.ipynb` : les statistiques descriptives (par jour, par heure, par mois, par année).
 - `externe.ipynb` : la comparaison entre nos ventes et l'épidémie de grippe.
 - `prevision.ipynb` : le test pour savoir si on peut prévoir le mois suivant.
-- `classeur.py` : fabrique le classeur Excel.
+- `classeur.ipynb` : fabrique le classeur Excel.
 - `classeur_pharmacie.xlsx` : le classeur pour le client.
 
 ## Installation
@@ -36,7 +36,7 @@ venv\Scripts\python -m pip install -r requirements.txt
    ```
 3. Lancer la création du classeur :
    ```
-   venv\Scripts\python classeur.py
+   venv\Scripts\python classeur.ipynb
    ```
 4. Pour les notebooks, les ouvrir dans VS Code, choisir le noyau `venv` et faire « Run All ».
 
