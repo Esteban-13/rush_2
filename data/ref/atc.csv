@@ -1,0 +1,9 @@
+code_atc,libelle,libelle_officiel,exemples
+M01AB,AINS acétiques,"Anti-inflammatoires non stéroïdiens, dérivés de l'acide acétique","diclofénac, acéclofénac"
+M01AE,AINS propioniques,"Anti-inflammatoires non stéroïdiens, dérivés de l'acide propionique","ibuprofène, kétoprofène"
+N02BA,Aspirine et dérivés,"Analgésiques, acide salicylique et dérivés",acide acétylsalicylique
+N02BE,Paracétamol,"Analgésiques, anilides",paracétamol
+N05B,Anxiolytiques,Anxiolytiques,"alprazolam, bromazépam"
+N05C,Somnifères,Hypnotiques et sédatifs,"zolpidem, zopiclone"
+R03,Antiasthmatiques,Médicaments des syndromes obstructifs des voies aériennes,salbutamol
+R06,Antihistaminiques,Antihistaminiques à usage systémique,"cétirizine, loratadine"
