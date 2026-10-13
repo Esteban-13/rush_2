@@ -218,3 +218,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Documents de travail du groupe (non livres)
+PLAN.md
+notes_oral.md
+explication_code.md
+
+# Fichiers temporaires d'Excel et de PowerPoint
+~$*
+
+# Reste d'une commande npm lancee par erreur
+package-lock.json
